@@ -34,6 +34,7 @@ let state = {
 /* ELEMENTS */
 const gateScreen = document.getElementById('gate-screen');
 const desktopScreen = document.getElementById('desktop-screen');
+const categoryScreen = document.getElementById('category-screen'); // NEW
 const virusLayer = document.getElementById('virus-layer');
 const bsodScreen = document.getElementById('bsod-screen');
 const codeInput = document.getElementById('access-code');
@@ -52,10 +53,11 @@ function checkCode() {
         gateScreen.classList.add('hidden');
         desktopScreen.classList.remove('hidden');
 
-        // Start Audio Looped
-        if (audio) audio.play().catch(e => { });
-
-        startClock();
+        // Start Ambient Audio
+        if (audio) {
+            audio.src = 'audio.mp3';
+            audio.play().catch(e => { });
+        }
     } else {
         // Fail
         errorMsg.classList.remove('hidden');
@@ -64,33 +66,35 @@ function checkCode() {
     }
 }
 
-function startClock() {
-    const clock = document.getElementById('clock');
-    setInterval(() => {
-        const d = new Date();
-        clock.innerText = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }, 1000);
-}
-
 /* VIRUS LOGIC */
-window.startVirus = function (category) {
-    if (state.activeCategory) return; // Already running
+
+// Step 1: User Selects Category -> Enter the "Room"
+window.enterCategory = function (category) {
+    if (state.activeCategory) return;
     state.activeCategory = category;
 
-    // Switch Audio to Category Specific
+    // UI Transition
+    desktopScreen.classList.add('hidden');
+    categoryScreen.classList.remove('hidden');
+    categoryScreen.classList.add('active');
+
+    // Update Title
+    document.getElementById('cat-title').innerText = category.toUpperCase() + " EXTRACTION";
+
+    // Switch Audio
     if (audio) {
         audio.pause();
-        audio.src = `${category}.mp3`; // ass.mp3, feet.mp3, tits.mp3
+        audio.src = `${category}.mp3`; // ass.mp3, feet.mp3 etc
         audio.load();
-        audio.play().catch(e => console.log("Audio play failed", e));
+        audio.play().catch(e => console.log("Audio switch failed", e));
     }
 
-    // Initial Spawn
-    spawnWindow();
-
-    // Start Loop
-    spawnLoop();
-};
+    // Delay slight for dramatic effect before virus starts
+    setTimeout(() => {
+        spawnWindow(); // First one
+        spawnLoop();   // Start avalanche
+    }, 1000);
+}
 
 function spawnLoop() {
     if (state.windowCount >= CONFIG.bsodLimit) {
@@ -99,12 +103,16 @@ function spawnLoop() {
     }
 
     state.spawnInterval = setTimeout(() => {
-        spawnWindow();
+        try {
+            spawnWindow();
+        } catch (err) {
+            console.error("Spawn error:", err);
+        }
 
         // Ecponential Speedup
         state.currentSpeed = Math.max(CONFIG.spawnSpeedConfig.min, state.currentSpeed - CONFIG.spawnSpeedConfig.decay);
 
-        spawnLoop();
+        spawnLoop(); // Recursive call ensures loop continues even if visual fails
     }, state.currentSpeed);
 }
 
@@ -119,42 +127,46 @@ function spawnWindow() {
 
     // Create Element
     const win = document.createElement('div');
-    win.className = 'win-window';
+    win.className = 'virus-popup';
 
     // Random Position
-    const x = Math.random() * (window.innerWidth - 200);
-    const y = Math.random() * (window.innerHeight - 200);
-    win.style.left = x + 'px';
-    win.style.top = y + 'px';
+    const maxX = window.innerWidth - 320;
+    const maxY = window.innerHeight - 300;
+    const x = Math.random() * maxX;
+    const y = Math.random() * maxY;
+
+    win.style.left = Math.max(0, x) + 'px';
+    win.style.top = Math.max(0, y) + 'px';
     win.style.zIndex = 500 + state.windowCount;
 
-    // Content Selection (Image vs Video)
+    // Content Selection
     const catData = CONFIG.folderMap[state.activeCategory];
-    const isVideo = Math.random() > 0.7; // 30% chance of video
+    // Safety check
+    if (!catData) {
+        console.error("Missing config for category:", state.activeCategory);
+        win.innerText = "DATA MISSING";
+        virusLayer.appendChild(win);
+        return;
+    }
 
+    const isVideo = Math.random() > 0.7; // 30% chance of video
     let contentHTML = '';
 
     if (isVideo && catData.vidCount > 0) {
         const vidIndex = Math.ceil(Math.random() * catData.vidCount);
         const vidSrc = `${catData.vidPrefix}${vidIndex}.mp4`;
-        contentHTML = `<video src="${vidSrc}" autoplay loop muted playsinline style="width:100%; height:auto; display:block;"></video>`;
+        contentHTML = `<video src="${vidSrc}" autoplay loop muted playsinline></video>`;
     } else {
         const imgIndex = Math.ceil(Math.random() * catData.imgCount);
         const imgSrc = `${catData.imgPrefix}${imgIndex}.jpg`;
-        // Fallback or Placeholder handled by onerror mainly
-        contentHTML = `<img src="${imgSrc}" onerror="this.src='https://via.placeholder.com/200x200/ff00ff/000000?text=DAHLIA_VIRUS'">`;
+        // Fallback or Placeholder handled by onerror
+        contentHTML = `<img src="${imgSrc}" onerror="this.src='https://via.placeholder.com/300x400/bd00ff/ffffff?text=UPLOADING...'">`;
     }
 
     // Inner HTML
     win.innerHTML = `
-        <div class="win-titlebar">
-            <span>Critical_Error_${state.windowCount}.dll</span>
-            <span>X</span>
-        </div>
-        <div class="win-content">
-            ${contentHTML}
-            <div style="color:red; font-weight:bold; text-align:center; margin-top:5px;">PAY OR DIE</div>
-        </div>
+        ${contentHTML}
+        <div class="virus-label">PAY TO STOP</div>
     `;
 
     virusLayer.appendChild(win);
@@ -162,8 +174,11 @@ function spawnWindow() {
 
 function triggerBSOD() {
     clearTimeout(state.spawnInterval);
+
+    // Hide everything else
+    categoryScreen.classList.add('hidden');
+    virusLayer.classList.add('hidden'); // Optional: hide the chaos to focus on BSOD
+
     bsodScreen.classList.remove('hidden');
     bsodScreen.classList.add('active');
-    // Stop ambient music? Or make it scarier?
-    // audio.playbackRate = 0.5;
 }
