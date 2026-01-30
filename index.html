@@ -58,12 +58,21 @@
         <!-- Virus Popups Spawn Here -->
     </div>
 
-    <!-- SECTION 4: PAYWALL -->
+    <!-- SECTION 4: PAYWALL (Unlocked by Code) -->
     <div id="bsod-screen" class="hidden">
-        <h1>SYSTEM CRASHED</h1>
-        <p style="color:#fff; font-size:1.5rem;">YOUR DEVICE BELONGS TO DAHLIA NOW.</p>
+        <h1>SESSION EXPIRED</h1>
+        <p>TIME LIMIT REACHED. PAY TRIBUTE TO RESUME.</p>
+
         <a href="https://throne.com/dahliastar/item/3137A703-5961-47C9-8EA5-7F659BA10A68" target="_blank"
-            class="pay-btn">PAY TRIBUTE TO REBOOT</a>
+            class="pay-btn">SEND TRIBUTE</a>
+
+        <div class="unlock-wrapper" style="margin-top: 50px; text-align:center;">
+            <p style="font-size: 0.8rem; letter-spacing: 2px;">ALREADY PAID? ENTER CATEGORY CODE:</p>
+            <input type="text" id="unlock-category-input" placeholder="CODE">
+            <br>
+            <button id="unlock-btn" onclick="checkUnlockCode()">UNLOCK SESSION</button>
+            <div id="unlock-msg" class="hidden" style="color:var(--neon-pink); margin-top:10px;">INVALID CODE</div>
+        </div>
     </div>
 
     <!-- AUDIO -->
