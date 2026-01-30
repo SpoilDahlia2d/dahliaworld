@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DAHLIA WORLD // SYSTEM</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- SECTION 1: THE GATE (Landing Page) -->
+    <div id="gate-screen" class="active">
+        <div class="terminal-container">
+            <h1 class="glitch-text">DAHLIA WORLD</h1>
+            <p>PROTECTED SYSTEM // AUTHORIZED PERSONNEL ONLY</p>
+
+            <div class="input-group">
+                <span>ENTER ACCESS CODE:</span>
+                <input type="password" id="access-code" maxlength="10" placeholder="••••••">
+                <button id="enter-btn">[ ENTER ]</button>
+            </div>
+
+            <div id="error-msg" class="hidden">ACCESS DENIED. PAY TRIBUTE FIRST.</div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: THE HUB (Windows 98 Desktop) -->
+    <div id="desktop-screen" class="hidden">
+
+        <!-- Desktop Icons -->
+        <div class="icon" onclick="startVirus('ass')">
+            <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png" alt="folder">
+            <span>*ASS_LEAKS</span>
+        </div>
+
+        <div class="icon" onclick="startVirus('feet')">
+            <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png" alt="folder">
+            <span>*FEET_ARCHIVE</span>
+        </div>
+
+        <div class="icon" onclick="startVirus('tits')">
+            <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png" alt="folder">
+            <span>*TITS_EXPOSED</span>
+        </div>
+
+        <div class="taskbar">
+            <button class="start-btn">
+                <img src="https://win98icons.alexmeub.com/icons/png/windows-0.png">
+                Start
+            </button>
+            <div class="time" id="clock">12:00 PM</div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: THE VIRUS (Infection Layer) -->
+    <div id="virus-layer" class="hidden">
+        <!-- Windows will spawn here -->
+    </div>
+
+    <!-- SECTION 4: BSOD (Paywall) -->
+    <div id="bsod-screen" class="hidden">
+        <p>A problem has been detected and DAHLIA has shut down your computer to prevent damage to your resistance.</p>
+        <p>ERROR_CODE: SUBMISSION_OVERLOAD</p>
+        <br>
+        <p>To restart your system and regain control, you must submit tribute immediately.</p>
+        <br>
+        <a href="https://throne.com/dahliastar/item/3137A703-5961-47C9-8EA5-7F659BA10A68" target="_blank"
+            class="tribute-link">>> CLICK HERE TO REBOOT SYSTEM <<< /a>
+                <br><br>
+                <p>Press any key to submit...</p>
+    </div>
+
+    <!-- AUDIO -->
+    <audio id="bg-audio" loop>
+        <source src="audio.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="error-audio">
+        <source src="error.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
