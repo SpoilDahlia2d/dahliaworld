@@ -1,22 +1,23 @@
 /* CONFIG */
 const CONFIG = {
     passcode: "DAHLIA",
-    bsodLimit: 30, // How many windows before crash
-    spawnSpeedConfig: {
-        start: 1000,
-        min: 100,
-        decay: 50 // ms reduced per spawn
-    },
+    maxItems: 30, // 30 items * 2 seconds = 60 seconds (1 minute)
+    spawnInterval: 2000, // Fixed 2 seconds
+
+    // Category Configuration
     folderMap: {
         'ass': {
+            code: "ASS123", // CODE TO UNLOCK ASS
             imgCount: 10, imgPrefix: 'img/ass/',
-            vidCount: 2, vidPrefix: 'img/ass/v' // v1.mp4, v2.mp4
+            vidCount: 2, vidPrefix: 'img/ass/v'
         },
         'feet': {
+            code: "FEET123", // CODE TO UNLOCK FEET
             imgCount: 10, imgPrefix: 'img/feet/',
             vidCount: 2, vidPrefix: 'img/feet/v'
         },
         'tits': {
+            code: "TITS123", // CODE TO UNLOCK TITS
             imgCount: 10, imgPrefix: 'img/tits/',
             vidCount: 2, vidPrefix: 'img/tits/v'
         }
@@ -27,18 +28,20 @@ const CONFIG = {
 let state = {
     activeCategory: null,
     windowCount: 0,
-    spawnInterval: null,
-    currentSpeed: CONFIG.spawnSpeedConfig.start
+    spawnTimer: null,
+    isLocked: false
 };
 
 /* ELEMENTS */
 const gateScreen = document.getElementById('gate-screen');
 const desktopScreen = document.getElementById('desktop-screen');
-const categoryScreen = document.getElementById('category-screen'); // NEW
+const categoryScreen = document.getElementById('category-screen');
 const virusLayer = document.getElementById('virus-layer');
 const bsodScreen = document.getElementById('bsod-screen');
 const codeInput = document.getElementById('access-code');
+const unlockInput = document.getElementById('unlock-category-input');
 const errorMsg = document.getElementById('error-msg');
+const unlockMsg = document.getElementById('unlock-msg');
 const audio = document.getElementById('bg-audio');
 const errAudio = document.getElementById('error-audio');
 
@@ -48,18 +51,15 @@ codeInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkCode
 
 function checkCode() {
     if (codeInput.value.toUpperCase() === CONFIG.passcode) {
-        // Unlock
         gateScreen.classList.remove('active');
         gateScreen.classList.add('hidden');
         desktopScreen.classList.remove('hidden');
 
-        // Start Ambient Audio
         if (audio) {
             audio.src = 'audio.mp3';
             audio.play().catch(e => { });
         }
     } else {
-        // Fail
         errorMsg.classList.remove('hidden');
         setTimeout(() => errorMsg.classList.add('hidden'), 2000);
         codeInput.value = "";
@@ -67,118 +67,105 @@ function checkCode() {
 }
 
 /* VIRUS LOGIC */
-
-// Step 1: User Selects Category -> Enter the "Room"
 window.enterCategory = function (category) {
-    if (state.activeCategory) return;
-    state.activeCategory = category;
+    if (state.activeCategory && !state.isLocked) return;
 
-    // UI Transition
+    state.activeCategory = category;
+    state.windowCount = 0;
+    state.isLocked = false;
+
+    // Screens
     desktopScreen.classList.add('hidden');
+    bsodScreen.classList.add('hidden'); // Ensure paywall is gone on restart
+    bsodScreen.classList.remove('active');
+
     categoryScreen.classList.remove('hidden');
     categoryScreen.classList.add('active');
+    virusLayer.innerHTML = ''; // Clear previous windows
+    virusLayer.classList.remove('hidden');
 
-    // Update Title
-    document.getElementById('cat-title').innerText = category.toUpperCase() + " EXTRACTION";
+    document.getElementById('cat-title').innerText = category.toUpperCase();
 
-    // Switch Audio
+    // Audio
     if (audio) {
         audio.pause();
-        audio.src = `${category}.mp3`; // ass.mp3, feet.mp3 etc
+        audio.src = `${category}.mp3`;
         audio.load();
-        audio.play().catch(e => console.log("Audio switch failed", e));
+        audio.play().catch(e => { });
     }
 
-    // Delay slight for dramatic effect before virus starts
-    setTimeout(() => {
-        spawnWindow(); // First one
-        spawnLoop();   // Start avalanche
-    }, 1000);
+    // Start Loop
+    setTimeout(spawnLoop, 1000);
 }
 
 function spawnLoop() {
-    if (state.windowCount >= CONFIG.bsodLimit) {
-        triggerBSOD();
+    if (state.windowCount >= CONFIG.maxItems) {
+        triggerPaywall();
         return;
     }
 
-    state.spawnInterval = setTimeout(() => {
-        try {
-            spawnWindow();
-        } catch (err) {
-            console.error("Spawn error:", err);
-        }
+    // Spawn Window
+    spawnWindow();
 
-        // Ecponential Speedup
-        state.currentSpeed = Math.max(CONFIG.spawnSpeedConfig.min, state.currentSpeed - CONFIG.spawnSpeedConfig.decay);
-
-        spawnLoop(); // Recursive call ensures loop continues even if visual fails
-    }, state.currentSpeed);
+    // Schedule next
+    state.spawnTimer = setTimeout(spawnLoop, CONFIG.spawnInterval);
 }
 
 function spawnWindow() {
     state.windowCount++;
+    if (errAudio) { errAudio.currentTime = 0; errAudio.play().catch(e => { }); }
 
-    // Play Error Sound
-    if (errAudio) {
-        errAudio.currentTime = 0;
-        errAudio.play().catch(e => { });
-    }
-
-    // Create Element
     const win = document.createElement('div');
     win.className = 'virus-popup';
 
-    // Random Position
     const maxX = window.innerWidth - 320;
     const maxY = window.innerHeight - 300;
-    const x = Math.random() * maxX;
-    const y = Math.random() * maxY;
-
-    win.style.left = Math.max(0, x) + 'px';
-    win.style.top = Math.max(0, y) + 'px';
+    win.style.left = Math.max(0, Math.random() * maxX) + 'px';
+    win.style.top = Math.max(0, Math.random() * maxY) + 'px';
     win.style.zIndex = 500 + state.windowCount;
 
-    // Content Selection
     const catData = CONFIG.folderMap[state.activeCategory];
-    // Safety check
-    if (!catData) {
-        console.error("Missing config for category:", state.activeCategory);
-        win.innerText = "DATA MISSING";
-        virusLayer.appendChild(win);
-        return;
-    }
-
-    const isVideo = Math.random() > 0.7; // 30% chance of video
+    const isVideo = Math.random() > 0.7;
     let contentHTML = '';
 
     if (isVideo && catData.vidCount > 0) {
         const vidIndex = Math.ceil(Math.random() * catData.vidCount);
-        const vidSrc = `${catData.vidPrefix}${vidIndex}.mp4`;
-        contentHTML = `<video src="${vidSrc}" autoplay loop muted playsinline></video>`;
+        contentHTML = `<video src="${catData.vidPrefix}${vidIndex}.mp4" autoplay loop muted playsinline></video>`;
     } else {
         const imgIndex = Math.ceil(Math.random() * catData.imgCount);
-        const imgSrc = `${catData.imgPrefix}${imgIndex}.jpg`;
-        // Fallback or Placeholder handled by onerror
-        contentHTML = `<img src="${imgSrc}" onerror="this.src='https://via.placeholder.com/300x400/bd00ff/ffffff?text=UPLOADING...'">`;
+        contentHTML = `<img src="${catData.imgPrefix}${imgIndex}.jpg" onerror="this.src='https://via.placeholder.com/300x400/bd00ff/ffffff?text=${state.activeCategory.toUpperCase()}'">`;
     }
 
-    // Inner HTML
-    win.innerHTML = `
-        ${contentHTML}
-        <div class="virus-label">PAY TO STOP</div>
-    `;
-
+    win.innerHTML = `${contentHTML}<div class="virus-label">PAY TO STOP</div>`;
     virusLayer.appendChild(win);
 }
 
-function triggerBSOD() {
-    clearTimeout(state.spawnInterval);
+function triggerPaywall() {
+    clearTimeout(state.spawnTimer);
+    state.isLocked = true;
 
-    // Hide everything else
+    // Hide virus layer to clean up? User said "reset and restart", so maybe we hide the clutter
+    virusLayer.classList.add('hidden');
     categoryScreen.classList.add('hidden');
-    virusLayer.classList.add('hidden'); // Optional: hide the chaos to focus on BSOD
 
     bsodScreen.classList.remove('hidden');
     bsodScreen.classList.add('active');
+}
+
+/* UNLOCK LOGIC */
+window.checkUnlockCode = function () {
+    const input = unlockInput.value.trim().toUpperCase();
+    const targetCode = CONFIG.folderMap[state.activeCategory].code;
+
+    if (input === targetCode) {
+        // Correct! Reset.
+        unlockInput.value = "";
+        unlockMsg.classList.add('hidden');
+
+        // Re-enter the category (Restarts flow)
+        enterCategory(state.activeCategory);
+    } else {
+        unlockMsg.classList.remove('hidden');
+        setTimeout(() => unlockMsg.classList.add('hidden'), 2000);
+    }
 }
