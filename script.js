@@ -12,17 +12,17 @@ const CONFIG = {
         'ass': {
             code: "ASS123",
             imgCount: 10, imgPrefix: 'img/ass/',
-            vidCount: 3, vidPrefix: 'img/ass/v'
+            vidCount: 5, vidPrefix: 'img/ass/v'
         },
         'feet': {
             code: "FEET123",
             imgCount: 10, imgPrefix: 'img/feet/',
-            vidCount: 4, vidPrefix: 'img/feet/v'
+            vidCount: 5, vidPrefix: 'img/feet/v'
         },
         'tits': {
             code: "TITS123",
             imgCount: 10, imgPrefix: 'img/tits/',
-            vidCount: 4, vidPrefix: 'img/tits/v'
+            vidCount: 5, vidPrefix: 'img/tits/v'
         }
     }
 };
