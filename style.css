@@ -1,317 +1,90 @@
-:root {
-    --bg-color: #080008;
-    --neon-pink: #ff00ff;
-    --neon-purple: #b026ff;
-    --text-white: #ffffff;
-    --glass-panel: rgba(255, 255, 255, 0.05);
-    --font-main: 'Montserrat', sans-serif;
-}
+<!DOCTYPE html>
+<html lang="en">
 
-body {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background: var(--bg-color);
-    font-family: var(--font-main);
-    color: var(--text-white);
-    user-select: none;
-    /* Soft ambient animated background */
-    background: radial-gradient(circle at 50% 50%, #1a001a 0%, #000 100%);
-}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DAHLIA EXCLUSIVE</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;700&display=swap" rel="stylesheet">
+</head>
 
-.hidden {
-    display: none !important;
-}
+<body>
 
-.active {
-    display: flex !important;
-}
+    <!-- SECTION 1: THE GATE (General Access) -->
+    <div id="gate-screen" class="active">
+        <div class="luxury-box">
+            <h1 class="elegant-title">DAHLIA WORLD</h1>
+            <p class="subtitle">SYSTEM LOGIN</p>
 
-/* 1. THE GATE (Login) */
-#gate-screen {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    background: #000;
-}
+            <div class="input-wrapper">
+                <input type="password" id="access-code" maxlength="10" placeholder="PIN CODE">
+            </div>
+            <button id="enter-btn">ENTER LOBBY</button>
+            <div id="error-msg" class="hidden">INCORRECT PIN</div>
+        </div>
+    </div>
 
-.luxury-box {
-    text-align: center;
-    padding: 60px;
-    border: 1px solid rgba(255, 0, 255, 0.3);
-    background: rgba(0, 0, 0, 0.8);
-    box-shadow: 0 0 50px rgba(189, 0, 255, 0.1);
-    border-radius: 4px;
-    backdrop-filter: blur(10px);
-}
+    <!-- SECTION 2: THE HUB (Category Selection) -->
+    <div id="desktop-screen" class="hidden">
+        <div class="hub-title">SELECT ARCHIVE</div>
 
-.elegant-title {
-    font-weight: 200;
-    font-size: 3rem;
-    letter-spacing: 10px;
-    margin: 0;
-    background: linear-gradient(45deg, #fff, var(--neon-pink));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-transform: uppercase;
-}
+        <div class="category-container">
+            <div class="cyber-card" onclick="openCategoryLock('ass')">
+                <h2>ASS</h2>
+                <p>LOCKED ARCHIVE</p>
+            </div>
 
-.subtitle {
-    font-weight: 400;
-    font-size: 0.8rem;
-    letter-spacing: 5px;
-    color: #888;
-    margin-top: 15px;
-    margin-bottom: 40px;
-}
+            <div class="cyber-card" onclick="openCategoryLock('feet')">
+                <h2>FEET</h2>
+                <p>LOCKED ARCHIVE</p>
+            </div>
 
-.input-wrapper input {
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid #555;
-    color: #fff;
-    font-family: var(--font-main);
-    font-size: 1.5rem;
-    width: 250px;
-    text-align: center;
-    padding: 10px;
-    outline: none;
-    letter-spacing: 8px;
-    transition: 0.3s;
-}
+            <div class="cyber-card" onclick="openCategoryLock('tits')">
+                <h2>TITS</h2>
+                <p>LOCKED ARCHIVE</p>
+            </div>
+        </div>
+    </div>
 
-.input-wrapper input:focus {
-    border-bottom: 1px solid var(--neon-pink);
-    box-shadow: 0 10px 20px -10px rgba(255, 0, 255, 0.2);
-}
+    <!-- SECTION 2.5: CATEGORY LOCK (Paywall Per Category) -->
+    <div id="lock-screen" class="hidden">
+        <div class="luxury-box">
+            <h2 id="lock-title" class="elegant-title">LOCKED</h2>
+            <p class="subtitle">CATEGORY RESTRICTED</p>
+            <p style="font-size: 0.7rem; color: #aaa; margin-bottom: 20px;">SEND TRIBUTE TO UNLOCK THIS ARCHIVE</p>
 
-#enter-btn {
-    margin-top: 40px;
-    background: transparent;
-    color: #fff;
-    border: 1px solid #fff;
-    padding: 15px 40px;
-    font-family: var(--font-main);
-    font-weight: 200;
-    letter-spacing: 3px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.4s ease;
-}
+            <input type="text" id="cat-code-input" placeholder="ACCESS CODE"
+                style="margin-bottom: 20px; background:transparent; border:none; border-bottom:1px solid #fff; color:#fff; text-align:center; padding:10px; font-family:'Montserrat'; letter-spacing:5px;">
+            <br>
+            <button id="unlock-cat-btn">UNLOCK</button>
+            <button onclick="closeLockScreen()"
+                style="margin-top:10px; background:transparent; border:none; color:#555; cursor:pointer;">CANCEL</button>
 
-#enter-btn:hover {
-    background: var(--neon-pink);
-    border-color: var(--neon-pink);
-    box-shadow: 0 0 30px rgba(255, 0, 255, 0.4);
-    transform: translateY(-2px);
-}
+            <div id="lock-error" class="hidden" style="color:var(--neon-pink); margin-top:10px;">INVALID CODE</div>
+        </div>
+    </div>
 
-#error-msg {
-    margin-top: 20px;
-    color: var(--neon-pink);
-    font-size: 0.8rem;
-    letter-spacing: 2px;
-}
+    <!-- SECTION 3: ACTIVE CATEGORY (The Stage) -->
+    <div id="category-screen" class="hidden">
+        <h1 id="cat-live-title">CATEGORY</h1>
+        <div class="loader">UPLOADING VIRUS...</div>
+    </div>
 
-/* 2. THE HUB (Selection) */
-#desktop-screen {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 50px;
-    /* Subtle moving gradient */
-    background: linear-gradient(135deg, #050005 0%, #1a001a 100%);
-}
+    <!-- SECTION 4: THE VIRUS (Infinite) -->
+    <div id="virus-layer">
+        <!-- Virus Popups Spawn Here -->
+    </div>
 
-.hub-title {
-    font-weight: 200;
-    font-size: 1.5rem;
-    letter-spacing: 8px;
-    color: rgba(255, 255, 255, 0.7);
-    border-bottom: 1px solid var(--neon-purple);
-    padding-bottom: 20px;
-}
+    <!-- AUDIO -->
+    <audio id="bg-audio" loop>
+        <source src="audio.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="error-audio">
+        <source src="error.mp3" type="audio/mpeg">
+    </audio>
 
-.category-container {
-    display: flex;
-    gap: 50px;
-}
+    <script src="script.js"></script>
+</body>
 
-.cyber-card {
-    width: 200px;
-    height: 300px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    position: relative;
-    overflow: hidden;
-}
-
-.cyber-card:hover {
-    background: rgba(255, 0, 255, 0.1);
-    border-color: var(--neon-pink);
-    transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-}
-
-.cyber-card h2 {
-    font-weight: 200;
-    font-size: 2rem;
-    letter-spacing: 5px;
-    z-index: 2;
-    margin: 0;
-}
-
-.cyber-card p {
-    font-size: 0.7rem;
-    letter-spacing: 3px;
-    color: var(--neon-purple);
-    margin-top: 15px;
-    text-transform: uppercase;
-}
-
-/* 2.5 ACTIVE CATEGORY */
-#category-screen {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle, #220022 0%, #000 100%);
-    z-index: 200;
-}
-
-#cat-title {
-    font-size: 4rem;
-    color: var(--neon-pink);
-    text-shadow: 0 0 20px var(--neon-pink);
-    letter-spacing: 10px;
-    animation: pulse 2s infinite;
-}
-
-.loader {
-    margin-top: 20px;
-    font-size: 1.5rem;
-    color: #fff;
-    letter-spacing: 5px;
-    animation: blink 0.5s infinite;
-}
-
-/* LOCK SCREEN OVERLAY */
-#lock-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.95);
-    backdrop-filter: blur(20px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 3000;
-}
-
-#lock-screen .luxury-box {
-    width: 90%;
-    max-width: 500px;
-    /* Wider on desktop */
-    padding: 80px 40px;
-    background: #000;
-    border: 1px solid var(--neon-pink);
-    box-shadow: 0 0 100px rgba(255, 0, 255, 0.2);
-}
-
-/* TEXT SPAM STYLE FIX */
-.virus-popup.text-popup {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0;
-    width: auto;
-    min-width: auto;
-}
-
-.virus-popup.text-popup span {
-    font-size: 4rem;
-    line-height: 1;
-    font-weight: 800;
-    color: #fff;
-    text-shadow:
-        0 0 5px #fff,
-        0 0 10px #fff,
-        0 0 20px var(--neon-pink),
-        0 0 40px var(--neon-pink),
-        0 0 80px var(--neon-pink);
-    animation: pulse 0.2s infinite alternate;
-    font-family: 'Montserrat', sans-serif;
-    letter-spacing: 2px;
-    white-space: nowrap;
-}
-
-/* 4. BSOD (Paywall) - Elegant Version */
-#bsod-screen {
-    background: #000;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-    text-align: center;
-}
-
-#bsod-screen h1 {
-    font-weight: 200;
-    font-size: 4rem;
-    letter-spacing: 15px;
-    color: #fff;
-    margin-bottom: 20px;
-}
-
-#bsod-screen p {
-    font-weight: 300;
-    letter-spacing: 2px;
-    color: #aaa;
-    margin-bottom: 60px;
-}
-
-.pay-btn {
-    border: 1px solid var(--neon-pink);
-    color: #fff;
-    background: transparent;
-    font-size: 1.2rem;
-    letter-spacing: 5px;
-    padding: 20px 60px;
-    text-decoration: none;
-    transition: 0.3s;
-}
-
-.pay-btn:hover {
-    background: var(--neon-pink);
-    box-shadow: 0 0 40px var(--neon-pink);
-    color: #000;
-}
-
-@keyframes smoothPop {
-    from {
-        opacity: 0;
-        transform: scale(0.9) translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
+</html>
