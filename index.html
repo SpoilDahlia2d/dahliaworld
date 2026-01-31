@@ -11,68 +11,69 @@
 
 <body>
 
-    <!-- SECTION 1: THE GATE -->
+    <!-- SECTION 1: THE GATE (General Access) -->
     <div id="gate-screen" class="active">
         <div class="luxury-box">
             <h1 class="elegant-title">DAHLIA WORLD</h1>
-            <p class="subtitle">EXCLUSIVE MEMBERS ONLY</p>
+            <p class="subtitle">SYSTEM LOGIN</p>
 
             <div class="input-wrapper">
                 <input type="password" id="access-code" maxlength="10" placeholder="PIN CODE">
             </div>
-            <button id="enter-btn">MEMBER LOGIN</button>
+            <button id="enter-btn">ENTER LOBBY</button>
             <div id="error-msg" class="hidden">INCORRECT PIN</div>
         </div>
     </div>
 
-    <!-- SECTION 2: THE HUB -->
+    <!-- SECTION 2: THE HUB (Category Selection) -->
     <div id="desktop-screen" class="hidden">
-        <div class="hub-title">SELECT DATA TYPE</div>
+        <div class="hub-title">SELECT ARCHIVE</div>
 
         <div class="category-container">
-            <div class="cyber-card" onclick="enterCategory('ass')">
+            <div class="cyber-card" onclick="openCategoryLock('ass')">
                 <h2>ASS</h2>
-                <p>94% LEAKED</p>
+                <p>LOCKED ARCHIVE</p>
             </div>
 
-            <div class="cyber-card" onclick="enterCategory('feet')">
+            <div class="cyber-card" onclick="openCategoryLock('feet')">
                 <h2>FEET</h2>
-                <p>100% PURITY</p>
+                <p>LOCKED ARCHIVE</p>
             </div>
 
-            <div class="cyber-card" onclick="enterCategory('tits')">
+            <div class="cyber-card" onclick="openCategoryLock('tits')">
                 <h2>TITS</h2>
-                <p>UNRELEASED</p>
+                <p>LOCKED ARCHIVE</p>
             </div>
         </div>
     </div>
 
-    <!-- SECTION 2.5: ACTIVE CATEGORY (The Stage) -->
+    <!-- SECTION 2.5: CATEGORY LOCK (Paywall Per Category) -->
+    <div id="lock-screen" class="hidden">
+        <div class="luxury-box">
+            <h2 id="lock-title" class="elegant-title">LOCKED</h2>
+            <p class="subtitle">CATEGORY RESTRICTED</p>
+            <p style="font-size: 0.7rem; color: #aaa; margin-bottom: 20px;">SEND TRIBUTE TO UNLOCK THIS ARCHIVE</p>
+
+            <input type="text" id="cat-code-input" placeholder="ACCESS CODE"
+                style="margin-bottom: 20px; background:transparent; border:none; border-bottom:1px solid #fff; color:#fff; text-align:center; padding:10px; font-family:'Montserrat'; letter-spacing:5px;">
+            <br>
+            <button id="unlock-cat-btn">UNLOCK</button>
+            <button onclick="closeLockScreen()"
+                style="margin-top:10px; background:transparent; border:none; color:#555; cursor:pointer;">CANCEL</button>
+
+            <div id="lock-error" class="hidden" style="color:var(--neon-pink); margin-top:10px;">INVALID CODE</div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: ACTIVE CATEGORY (The Stage) -->
     <div id="category-screen" class="hidden">
-        <h1 id="cat-title">CATEGORY</h1>
+        <h1 id="cat-live-title">CATEGORY</h1>
         <div class="loader">UPLOADING VIRUS...</div>
     </div>
 
-    <!-- SECTION 3: THE VIRUS -->
+    <!-- SECTION 4: THE VIRUS (Infinite) -->
     <div id="virus-layer">
         <!-- Virus Popups Spawn Here -->
-    </div>
-
-    <!-- SECTION 4: PAYWALL (Unlocked by Code) -->
-    <div id="bsod-screen" class="hidden">
-        <h1>SESSION EXPIRED</h1>
-        <p>TIME LIMIT REACHED. PAY TRIBUTE TO RESUME.</p>
-
-        <a href="https://throne.com/dahliastar/item/3137A703-5961-47C9-8EA5-7F659BA10A68" target="_blank"
-            class="pay-btn">SEND TRIBUTE</a>
-
-        <div class="unlock-wrapper" style="margin-top: 50px; text-align:center;">
-            <p style="font-size: 0.8rem; letter-spacing: 2px;">ALREADY PAID? ENTER CATEGORY CODE:</p>
-            <input type="text" id="unlock-category-input" placeholder="CODE">
-            <br>
-            <button id="unlock-btn" onclick="checkUnlockCode()">UNLOCK SESSION</button>
-            <div id="unlock-msg" class="hidden" style="color:var(--neon-pink); margin-top:10px;">INVALID CODE</div>
-        </div>
     </div>
 
     <!-- AUDIO -->
